@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+
 import {
   KeyboardAvoidingView,
   Keyboard,
@@ -13,11 +14,31 @@ import {
   ImageBackground,
 } from "react-native";
 
+import { useFonts } from "expo-font";
+// import { useCallback } from "react";
+// import * as SplashScreen from "expo-splash-screen";
+
+// SplashScreen.preventAutoHideAsync();
+
 const initialState = { email: "", password: "" };
 
 const LoginScreen = ({ navigation }) => {
-  // console.log("navigation: ", navigation);
-  // console.log("Platform.OS: ", Platform.OS);
+  const [fontsLoaded] = useFonts({
+    // "Inter-Black": require("./assets/fonts/Inter-Black.otf"),
+    "Roboto-Regular": require("../../assets/fonts/Roboto/Roboto-Regular.ttf"),
+    "Roboto-Bold": require("../../assets/fonts/Roboto/Roboto-Bold.ttf"),
+  });
+
+  // const onLayoutRootView = useCallback(async () => {
+  //   if (fontsLoaded) {
+  //     await SplashScreen.hideAsync();
+  //   }
+  // }, [fontsLoaded]);
+
+  // if (!fontsLoaded) {
+  //   return null;
+  // }
+
   const [state, setState] = useState(initialState);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
 

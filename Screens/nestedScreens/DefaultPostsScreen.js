@@ -8,7 +8,15 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+import { useFonts } from "expo-font";
+
 const DefaultPostsScreen = ({ navigation, route }) => {
+  const [fontsLoaded] = useFonts({
+    // "Inter-Black": require("./assets/fonts/Inter-Black.otf"),
+    "Roboto-Regular": require("../../assets/fonts/Roboto/Roboto-Regular.ttf"),
+    "Roboto-Bold": require("../../assets/fonts/Roboto/Roboto-Bold.ttf"),
+  });
+
   const [posts, setPosts] = useState([]);
   console.log("route.params: ", route.params);
 

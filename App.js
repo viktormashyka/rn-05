@@ -1,29 +1,20 @@
-// import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
-// import { Button, ImageBackground, StyleSheet, Text, View } from "react-native";
-// import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import { useRoute } from "./router";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
 
-// import icons
-// import Ionicons from "@expo/vector-icons/Ionicons";
+// import * as Font from "expo-font";
+// import AppLoading from "expo-app-loading";
 
-import * as Font from "expo-font";
-import AppLoading from "expo-app-loading";
 // import { useFonts } from "expo-font";
 
-const loadFonts = async () => {
-  await Font.loadAsync({
-    "Roboto-Regular": require("./assets/fonts/Roboto/Roboto-Regular.ttf"),
-    "Roboto-Bold": require("./assets/fonts/Roboto/Roboto-Bold.ttf"),
-  });
-};
-
-// const AuthStack = createStackNavigator();
-
-// import LoginScreen from "./Screens/auth/LoginScreen";
-// import RegistrationScreen from "./Screens/auth/RegistrationScreen";
-// import Home from "./Screens/main/Home";
+// const loadFonts = async () => {
+//   await Font.loadAsync({
+//     "Roboto-Regular": require("./assets/fonts/Roboto/Roboto-Regular.ttf"),
+//     "Roboto-Bold": require("./assets/fonts/Roboto/Roboto-Bold.ttf"),
+//   });
+// };
 
 export default function App() {
   // const [fontsLoaded] = useFonts({
@@ -42,21 +33,25 @@ export default function App() {
   //   return null;
   // }
 
-  const [isReady, setIsReady] = useState(false);
+  // const [isReady, setIsReady] = useState(false);
 
   const routing = useRoute({});
 
-  if (!isReady) {
-    return (
-      <AppLoading
-        startAsync={loadFonts}
-        onFinish={() => setIsReady(true)}
-        onError={console.warn}
-      />
-    );
-  }
+  // if (!isReady) {
+  //   return (
+  //     <AppLoading
+  //       startAsync={loadFonts}
+  //       onFinish={() => setIsReady(true)}
+  //       onError={console.warn}
+  //     />
+  //   );
+  // }
 
-  return <NavigationContainer>{routing}</NavigationContainer>;
+  return (
+    <Provider store={store}>
+      <NavigationContainer>{routing}</NavigationContainer>
+    </Provider>
+  );
 
   // return (
   //   <NavigationContainer>

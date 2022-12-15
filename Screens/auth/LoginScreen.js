@@ -60,16 +60,19 @@ const LoginScreen = ({ navigation }) => {
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
-  };
 
-  const handleSubmit = () => {
     console.log("state: ", state);
     setState(initialState);
-
-    navigation.navigate("Home", {
-      screen: "Posts",
-    });
   };
+
+  // const handleSubmit = () => {
+  //   console.log("state: ", state);
+  //   setState(initialState);
+
+  //   navigation.navigate("Home", {
+  //     screen: "Posts",
+  //   });
+  // };
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
@@ -111,7 +114,7 @@ const LoginScreen = ({ navigation }) => {
             <TouchableOpacity
               activeOpacity={0.8}
               style={styles.button}
-              onPress={handleSubmit}
+              onPress={keyboardHide}
             >
               <Text style={styles.text}>Login</Text>
             </TouchableOpacity>

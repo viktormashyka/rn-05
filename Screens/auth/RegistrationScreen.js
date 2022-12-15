@@ -12,14 +12,19 @@ import {
   Dimensions,
   ImageBackground,
 } from "react-native";
+import { useDispatch } from "react-redux";
 
-const initialState = { name: "", email: "", password: "" };
+import { authSignUpUser } from "../../redux/auth/authOperations";
+
+const initialState = { nickname: "", email: "", password: "" };
 
 const RegistrationScreen = ({ navigation }) => {
   // console.log("navigation: ", navigation);
   // console.log("Platform.OS: ", Platform.OS);
   const [state, setState] = useState(initialState);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+
+  const dispatch = useDispatch();
 
   const [dimensions, setDimensions] = useState(
     Dimensions.get("window").width - 16 * 2
@@ -36,22 +41,25 @@ const RegistrationScreen = ({ navigation }) => {
     };
   }, []);
 
-  const keyboardHide = () => {
+  const handleSubmit = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
-  };
-
-  const handleSubmit = () => {
     console.log("state: ", state);
+    dispatch(authSignUpUser(state));
     setState(initialState);
-
-    navigation.navigate("Home", {
-      screen: "Posts",
-    });
   };
+
+  // const handleSubmit = () => {
+  //   console.log("state: ", state);
+  //   setState(initialState);
+
+  //   navigation.navigate("Home", {
+  //     screen: "Posts",
+  //   });
+  // };
 
   return (
-    <TouchableWithoutFeedback onPress={keyboardHide}>
+    <TouchableWithoutFeedback onPress={handleSubmit}>
       <View style={styles.container}>
         <ImageBackground
           style={styles.image}
@@ -69,12 +77,12 @@ const RegistrationScreen = ({ navigation }) => {
           >
             <Text style={styles.title}>Registration</Text>
             <TextInput
-              value={state.name}
-              placeholder="Login"
+              value={state.nickname}
+              placeholder="Nickname"
               style={styles.input}
               onFocus={() => setIsShowKeyboard(true)}
               onChangeText={(value) =>
-                setState((prevState) => ({ ...prevState, name: value }))
+                setState((prevState) => ({ ...prevState, nickname: value }))
               }
             />
             <TextInput

@@ -35,7 +35,7 @@ export default function App() {
 
   // const [isReady, setIsReady] = useState(false);
 
-  const routing = useRoute({});
+  const routing = useRoute(false);
 
   // if (!isReady) {
   //   return (

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   KeyboardAvoidingView,
   Keyboard,
@@ -44,22 +44,18 @@ const RegistrationScreen = ({ navigation }) => {
   const handleSubmit = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
-    console.log("state: ", state);
+    console.log("registration state: ", state);
     dispatch(authSignUpUser(state));
     setState(initialState);
   };
 
-  // const handleSubmit = () => {
-  //   console.log("state: ", state);
-  //   setState(initialState);
-
-  //   navigation.navigate("Home", {
-  //     screen: "Posts",
-  //   });
-  // };
+  const keyboardHide = () => {
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
+  };
 
   return (
-    <TouchableWithoutFeedback onPress={handleSubmit}>
+    <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.container}>
         <ImageBackground
           style={styles.image}

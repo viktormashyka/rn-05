@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import {
   View,
   Text,
@@ -12,8 +13,10 @@ import {
   TextInput,
 } from "react-native";
 import { Camera } from "expo-camera";
-// import { TouchableOpacity } from "react-native-gesture-handler";
+
 import * as Location from "expo-location";
+
+import db from "../../firebase/config";
 
 const initialState = { pictureTitle: "", pictureLocation: "" };
 
@@ -24,44 +27,77 @@ const CreatePostsScreen = ({ navigation }) => {
   const [camera, setCamera] = useState(null);
   const [photo, setPhoto] = useState(null);
 
+  const [errorMsg, setErrorMsg] = useState(null);
+
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
   };
 
-  // const [errorMsg, setErrorMsg] = useState(null);
+  const { userId, nickName } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    // Location.requestPermissionsAsync() // deprecated
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      console.log("status: ", status);
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        console.log("errorMsg: ", errorMsg);
+        return;
+      }
+    })();
+  }, []);
 
   const takePhoto = async () => {
     console.log("takePhoto...");
     const photo = await camera.takePictureAsync();
+    // const { uri } = await camera.takePictureAsync();
     const location = await Location.getCurrentPositionAsync();
     console.log("latitude", location.coords.latitude);
     console.log("longitude", location.coords.longitude);
     console.log("photo: ", photo);
     setPhoto(photo.uri);
+    // setPhoto(uri);
     console.log("photo.uri", photo);
   };
 
   const sendPhoto = () => {
     console.log("sendPhoto...");
-    console.log("navigation: ", navigation);
-    console.log("state: ", state);
+    // console.log("navigation: ", navigation);
+    uploadPostToServer();
     setState(initialState);
-    navigation.navigate("DefaultPosts", { photo, state });
+    // navigation.navigate("DefaultPosts", { photo, state });
+    navigation.navigate("DefaultPosts");
   };
 
-  // useEffect(() => {
-  //   // Location.requestPermissionsAsync() // deprecated
-  //   (async () => {
-  //     let { status } = await Location.requestForegroundPermissionsAsync();
-  //     console.log("status: ", status);
-  //     if (status !== "granted") {
-  //       setErrorMsg("Permission to access location was denied");
-  //       console.log("errorMsg: ", errorMsg);
-  //       return;
-  //     }
-  //   })();
-  // }, []);
+  const uploadPostToServer = async () => {
+    const photo = await uploadPhotoToServer();
+    const createPost = await db
+      .firestore()
+      .collection("posts")
+      .add({ photo, state, location: location.coords, userId, nickName });
+  };
+
+  const uploadPhotoToServer = async (photo) => {
+    const response = await fetch(photo);
+    const file = await response.blob();
+
+    const uniquePostId = Date.now().toString();
+
+    const data = await db.storage().ref(`postImage/${uniquePostId}`).put(file);
+    console.log(`data: ${data}`);
+
+    const processedPhoto = await db
+      .storage()
+      .ref("postImage")
+      .child(uniquePostId)
+      .getDownloadURL();
+
+    console.log(`processedPhoto: ${processedPhoto}`);
+
+    return processedPhoto;
+  };
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>

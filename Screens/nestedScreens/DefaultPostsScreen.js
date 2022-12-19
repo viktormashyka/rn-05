@@ -10,6 +10,8 @@ import {
 
 import { useFonts } from "expo-font";
 
+import db from "../../firebase/config";
+
 const DefaultPostsScreen = ({ navigation, route }) => {
   const [fontsLoaded] = useFonts({
     // "Inter-Black": require("./assets/fonts/Inter-Black.otf"),
@@ -20,11 +22,25 @@ const DefaultPostsScreen = ({ navigation, route }) => {
   const [posts, setPosts] = useState([]);
   console.log("route.params: ", route.params);
 
+  const getAllPosts = async () => {
+    await db
+      .firestore()
+      .collection("posts")
+      .onSnapshot((data) => {
+        setPosts(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      });
+  };
+
+  // useEffect(() => {
+  //   if (route.params) {
+  //     setPosts((prevState) => [...prevState, route.params]);
+  //   }
+  // }, [route.params]);
+
   useEffect(() => {
-    if (route.params) {
-      setPosts((prevState) => [...prevState, route.params]);
-    }
-  }, [route.params]);
+    getAllPosts();
+  }, []);
+
   console.log("posts: ", posts);
 
   return (
@@ -38,15 +54,23 @@ const DefaultPostsScreen = ({ navigation, route }) => {
             <Image source={{ uri: item.photo }} style={styles.image} />
             <Text>Title: {item.state.pictureTitle}</Text>
             <Text>Location: {item.state.pictureLocation}</Text>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("Map", { location: item.location })
+              }
+            >
+              <Text style={styles.text}>Go to Map!</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("Comments", { postId: item.id })
+              }
+            >
+              <Text style={styles.text}>Go to Comments!</Text>
+            </TouchableOpacity>
           </View>
         )}
       />
-      <TouchableOpacity onPress={() => navigation.navigate("Map")}>
-        <Text style={styles.text}>Go to Map!</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate("Comments")}>
-        <Text style={styles.text}>Go to Comments!</Text>
-      </TouchableOpacity>
     </View>
   );
 };

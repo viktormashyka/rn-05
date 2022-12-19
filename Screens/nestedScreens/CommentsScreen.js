@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,23 +9,48 @@ import {
   TextInput,
   TouchableOpacity,
   FlatList,
+  SafeAreaView,
 } from "react-native";
+import { useSelector } from "react-redux";
+import db from "../../firebase/config";
 
-const initialState = { comments: [] };
-
-const CommentsScreen = () => {
-  const [state, setState] = useState(initialState);
+const CommentsScreen = ({ route }) => {
+  const { postId } = route.params;
+  const [comment, setComment] = useState([]);
+  const [allComments, setAllComments] = useState([]);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+
+  const { nickName } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    getAllPosts();
+  }, []);
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
   };
 
-  const createComment = () => {
+  const createComment = async () => {
     console.log("createComment...");
-    console.log("state: ", state);
-    setState(initialState);
+    await db
+      .firestore()
+      .collection("posts")
+      .doc(postId)
+      .collection("comment")
+      .add({ comment, nickName });
+    setComment([]);
+  };
+
+  const getAllPosts = async () => {
+    await db
+      .firestore()
+      .collection("posts")
+      .doc(postId)
+      .collection("comment")
+      .onSnapshot((data) => {
+        setAllComments(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      });
   };
 
   return (
@@ -40,6 +65,20 @@ const CommentsScreen = () => {
             </View>
           )}
         /> */}
+
+        <SafeAreaView style={styles.container}>
+          <FlatList
+            data={allComments}
+            renderItem={({ item }) => (
+              <View style={styles.commentContainer}>
+                <Text>{item.nickName}</Text>
+                <Text>{item.comment}</Text>
+              </View>
+            )}
+            keyExtractor={(item) => item.id}
+          />
+        </SafeAreaView>
+
         <KeyboardAvoidingView
           behavior={Platform.OS == "ios" ? "padding" : "height"}
         >
@@ -50,13 +89,14 @@ const CommentsScreen = () => {
             }}
           >
             <TextInput
-              value={state.comments}
+              value={comment}
               placeholder="Add comment..."
               style={styles.input}
               onFocus={() => setIsShowKeyboard(true)}
-              onChangeText={(value) =>
-                setState((prevState) => ({ ...prevState, comments: value }))
-              }
+              // onChangeText={(value) =>
+              //   setComment((prevState) => ({ ...prevState, comment: value }))
+              // }
+              onChangeText={setComment}
             />
             <TouchableOpacity style={styles.sendBtn} onPress={createComment}>
               <Text style={styles.sendLabel}>Create comment</Text>
@@ -71,8 +111,15 @@ const CommentsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    // justifyContent: "flex-end",
   },
-
+  commentContainer: {
+    borderWidth: 1,
+    borderColor: "#20b2aa",
+    marginHorizontal: 10,
+    padding: 10,
+    marginBottom: 10,
+  },
   sendBtn: {
     marginHorizontal: 30,
     height: 40,
@@ -82,6 +129,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     justifyContent: "center",
     alignItems: "center",
+    marginBottom: 30,
   },
   sendLabel: { color: "#20b2aa", fontSize: 20 },
 
@@ -116,7 +164,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     borderWidth: 1,
-    borderColor: "#212121",
+    // borderColor: "#212121",
+    borderColor: "transparent",
     marginBottom: 10,
     fontFamily: "Roboto-Regular",
     fontSize: 16,

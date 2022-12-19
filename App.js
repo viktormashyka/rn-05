@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { useRoute } from "./router";
-import { Provider } from "react-redux";
+import { useState, useEffect } from "react";
+
+import { Provider, useSelector } from "react-redux";
 import { store } from "./redux/store";
+import Main from "./components/Main";
 
 // import * as Font from "expo-font";
 // import AppLoading from "expo-app-loading";
@@ -35,8 +35,6 @@ export default function App() {
 
   // const [isReady, setIsReady] = useState(false);
 
-  const routing = useRoute(false);
-
   // if (!isReady) {
   //   return (
   //     <AppLoading
@@ -49,7 +47,7 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <NavigationContainer>{routing}</NavigationContainer>
+      <Main />
     </Provider>
   );
 

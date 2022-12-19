@@ -5,11 +5,14 @@
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 import * as firebase from "firebase";
+import { initializeApp } from "firebase/app";
 import "firebase/auth";
+import "firebase/storage";
+import "firebase/firestore";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-var firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyD6BGGoP7Wt2FqGdI2kfEFRhpt6sm8Jlqw",
   authDomain: "rn-social-c8ef4.firebaseapp.com",
   projectId: "rn-social-c8ef4",

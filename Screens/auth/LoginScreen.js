@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   KeyboardAvoidingView,
@@ -13,6 +13,10 @@ import {
   Dimensions,
   ImageBackground,
 } from "react-native";
+
+import { useDispatch } from "react-redux";
+
+import { authSignInUser } from "../../redux/auth/authOperations";
 
 import { useFonts } from "expo-font";
 // import { useCallback } from "react";
@@ -42,6 +46,8 @@ const LoginScreen = ({ navigation }) => {
   const [state, setState] = useState(initialState);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
 
+  const dispatch = useDispatch();
+
   const [dimensions, setDimensions] = useState(
     Dimensions.get("window").width - 16 * 2
   );
@@ -57,22 +63,18 @@ const LoginScreen = ({ navigation }) => {
     };
   }, []);
 
-  const keyboardHide = () => {
+  const handleSubmit = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
-
-    console.log("state: ", state);
+    console.log("submit state: ", state);
+    dispatch(authSignInUser(state));
     setState(initialState);
   };
 
-  // const handleSubmit = () => {
-  //   console.log("state: ", state);
-  //   setState(initialState);
-
-  //   navigation.navigate("Home", {
-  //     screen: "Posts",
-  //   });
-  // };
+  const keyboardHide = () => {
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
+  };
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
@@ -114,7 +116,7 @@ const LoginScreen = ({ navigation }) => {
             <TouchableOpacity
               activeOpacity={0.8}
               style={styles.button}
-              onPress={keyboardHide}
+              onPress={handleSubmit}
             >
               <Text style={styles.text}>Login</Text>
             </TouchableOpacity>
